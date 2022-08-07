@@ -38,10 +38,11 @@ public class P1 {
             game.playGame(keyboard);
             //prompt user for repeat of game
             System.out.print("\nRepeat the game? Enter yes to repeat: ");
+            //consume next line character
             keyboard.nextLine();
+            //get user input
             repeat = keyboard.nextLine();
-            //conclude do-while loop with verification of user response
-
+        //conclude do-while loop with verification of user response
         } while (repeat.equalsIgnoreCase("yes"));
 
         //goodbye message
