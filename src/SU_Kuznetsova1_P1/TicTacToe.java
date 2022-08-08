@@ -24,28 +24,37 @@ public class TicTacToe {
     //size of board array
     private final int SIZE;
     //number of players
-    private final int NUMBEROFPLAYERS;
+    private final int NUMBER_OF_PLAYERS;
     //array to hold player char values
     private char[] playerName;
     //array to hold number of wins for each player
     private int[] winStat;
-    //declare variables for row and col
     //integer values for row, column, and number of ties between players
-    private int row, col, tieStat;
+    private int player1, player2, row, col, tieStat;
 
     /**
-     * No-arg constructor
+     * No-argument constructor initializes the necessary variables for TTT game.
      */
     public TicTacToe() {
+        //initialize size of board array
         SIZE = 3;
-        NUMBEROFPLAYERS = 2;
-        playerName = new char[NUMBEROFPLAYERS];
+        //initialize number of players
+        NUMBER_OF_PLAYERS = 2;
+        //initialize player 1D array
+        playerName = new char[NUMBER_OF_PLAYERS];
+        //player 0 represents character O with unicode of 79
         playerName[0] = 79;
+        //player 0 represents character O with unicode of 88
         playerName[1] = 88;
+        //initialize 2D array to represent TTT board
         board = new int[SIZE][SIZE];
-        winStat = new int[NUMBEROFPLAYERS];
+        //initialize 1D array to hold wining statistics of players
+        winStat = new int[NUMBER_OF_PLAYERS];
+        //initialize variable for rows (will be used for user input)
         row = 0;
+        //initialize variable for rows (will be used for user input)
         col = 0;
+        //initialize variable for rows (will be used for user input)
         tieStat = 0;
     }
 
@@ -82,7 +91,7 @@ public class TicTacToe {
      * methods for receiving/validating inputs, setting the inputs to the board,
      * checking for a winner and if the board is full after each player's turn
      *
-     * @param keyboard      Scanner object for user unput
+     * @param keyboard      Scanner object for user input
      * @return boolean      whether or not there's a winner or a tie
      */
     public boolean playerTurns(Scanner keyboard) {
@@ -91,16 +100,16 @@ public class TicTacToe {
 
 
         //players take turns through for-loop
-        for (int i = 0; i < NUMBEROFPLAYERS && !someoneWonOrTie; i++) {
+        for (int i = 0; i < NUMBER_OF_PLAYERS && !someoneWonOrTie; i++) {
 
             //prompt user
             System.out.println(playerName[i] + ", it is your turn.");
             //call method to gather, validate, and set inputs
             checkAndSetInputs(keyboard);
-            setBoard(row, col, i);
+            placePlayer(i);
 
             //check if board has winner by calling checkWinner method
-            if (checkWinner(row, col, i)) {
+            if (checkWinner(i)) {
                 //display a message if there's a win
                 System.out.println("\n" + playerName[i] + " won the game!");
                 //keep track of player's win
@@ -152,8 +161,8 @@ public class TicTacToe {
                 }
                 //receive input
                 input = keyboard.nextInt();
-            //while input is in range of array
-            }while (input > SIZE - 1);
+            //while input is in range of array & no negative numbers
+            }while (input > SIZE - 1 || input < 0);
 
             //assign input to row
             row = input;
@@ -162,7 +171,7 @@ public class TicTacToe {
             //continue do-while loop while input is out of range
             do{
                 //prompt col
-                System.out.print("Which col? #: ");
+                System.out.print("Which column? #: ");
                 //check if it is not a number input
                 while (!keyboard.hasNextInt()) {
                     //prompt to enter a number
@@ -171,8 +180,8 @@ public class TicTacToe {
                 }
                 //receive input
                 input = keyboard.nextInt();
-            //while input is in range of array
-            }while (input > SIZE - 1);
+            //while input is in range of array & no negative numbers
+            }while (input > SIZE - 1 || input < 0);
 
             //assign input to row
             col = input;
@@ -195,31 +204,31 @@ public class TicTacToe {
      * unicode number value of player's character (79 for O and 88 for X);
      * if true, then that player is a winner.
      *
-     * @param row   row value selected by user
-     * @param col   col value selected by user
-     * @param i     int index value representing player
+//     * @param row   row value selected by user
+//     * @param col   col value selected by user
+     * @param playerIndex     int index value representing player
      * @return boolean  whether or not winner exists
      */
-    public boolean checkWinner(int row, int col, int i) {
+    public boolean checkWinner(int playerIndex) {
 
         //playerName[i] represents unicode value of current player
         //size is int value of board, equals row length
 
         //check winner in the latest row
-        if (rowSum(row) == SIZE * playerName[i]) {
+        if (rowSum(row) == SIZE * playerName[playerIndex]) {
             return true;
         }
         //check winner in the latest column
-        else if (colSum(col) == SIZE * playerName[i]) {
+        else if (colSum(col) == SIZE * playerName[playerIndex]) {
             return true;
         }
         //check winner in diagonals
         //diagonal 1
-        else if (diagSum1() == SIZE * playerName[i]) {
+        else if (diagSum1() == SIZE * playerName[playerIndex]) {
             return true;
         }
         //diagonal 2
-        else if (diagSum2() == SIZE * playerName[i]) {
+        else if (diagSum2() == SIZE * playerName[playerIndex]) {
             return true;
         } else {
             return false;
@@ -241,9 +250,11 @@ public class TicTacToe {
             for (int j = 0; j < SIZE; j++) {
                 //check if any locations are 0
                 if (getBoardElement(i, j) == 0)
+                    //return boolean if the board has space
                     return true;
             }
         }
+        //return boolean if the board does not have space
         return false;
     }
 
@@ -252,13 +263,11 @@ public class TicTacToe {
      * setBoard method sets the element of the selected location
      * to the current player char value
      *
-     * @param row   row value selected by user
-     * @param col   col value selected by user
-     * @param i     int index value representing player
+     * @param playerIndex     int index value representing player
      */
-    public void setBoard(int row, int col, int i) {
+    public void placePlayer(int playerIndex) {
         //set player on the board
-        board[row][col] = playerName[i];
+        board[row][col] = playerName[playerIndex];
     }
 
     /**
@@ -268,17 +277,18 @@ public class TicTacToe {
      * @return int      sum of row
      */
     public int rowSum(int rowNum) {
-        //value to hold sum of row
+        //initialize accumulator
         int summedRow = 0;
 
         //outer loop to go through all rows
         for (int row = rowNum; row <= rowNum; row++) {
-            //initialize accumulator
             //sum individual row
             for (int col = 0; col < board[rowNum].length; col++) {
+                //accumulator holds specific row sums
                 summedRow += board[row][col];
             }
         }
+        //return the sum of the row
         return summedRow;
     }
 
@@ -289,13 +299,13 @@ public class TicTacToe {
      * @return int[]    sum of columns
      */
     public int colSum(int colNum) {
+        //initialize accumulator
         int summedCol = 0;
         //outer loop to go through all
         for (int col = colNum; col <= colNum; col++) {
-            //initialize accumulator
-            //summedCol = 0;
             //sum individual row
             for (int row = 0; row < board.length; row++) {
+                //accumulator holds specific column sums
                 summedCol += board[row][col];
             }
         }
@@ -316,7 +326,7 @@ public class TicTacToe {
         for (int row = 0; row < board.length; row++) {
             //inner loop is to pick specific columns
             for (int col = (board.length - row - 1); col >= 0; col -= SIZE)
-                //accumulator holds specific column sums
+                //accumulator holds specific diagonal sums
                 totalD1 += board[row][col];
         }
         //return diagonal sum
@@ -336,7 +346,7 @@ public class TicTacToe {
         for (int row = 0; row < board.length; row++) {
             //inner loop is to pick specific columns
             for (int col = row; col >= 0; col -= SIZE)
-                //accumulator holds specific column sums
+                //accumulator holds specific diagonal sums
                 totalD2 += board[row][col];
         }
         //return diagonal sum
@@ -380,12 +390,12 @@ public class TicTacToe {
                     case 0:
                         System.out.print("\t  |");
                         break;
-                    //if element has a 79, print corresponding char - O
-                    case 79:
+                    //if element has a 79 (unicode value for 'O')
+                    case 'O':
                         System.out.print("\tO |");
                         break;
-                    //if element has a 88, print corresponding char - X
-                    case 88:
+                    //if element has a 88 (unicode value for 'X')
+                    case 'X':
                         System.out.print("\tX |");
                         break;
                 }
@@ -395,6 +405,7 @@ public class TicTacToe {
             for (int j = 0; j < SIZE; j++) {
                 System.out.print("  ---");
             }
+            //go to next line
             System.out.println();
         }
         //print a space for visual clarity after the board
@@ -409,7 +420,7 @@ public class TicTacToe {
         //print game stats header
         System.out.println("Game Stats");
         //loop through each player and print number of wins
-        for (int i = 0; i < NUMBEROFPLAYERS; i++) {
+        for (int i = 0; i < NUMBER_OF_PLAYERS; i++) {
             System.out.println(playerName[i] + " has won " + winStat[i]
                     + " games.");
         }
@@ -433,12 +444,6 @@ public class TicTacToe {
         }
     }
 
-    /**
-     * getSIZE method returns the integer value for the size of the board
-     * @return int  integer value of board size
-     */
-    public int getSIZE() {
-        return SIZE;
-    }
+
 
 }

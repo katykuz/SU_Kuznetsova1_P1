@@ -42,7 +42,7 @@ public class P1 {
             keyboard.nextLine();
             //get user input
             repeat = keyboard.nextLine();
-        //conclude do-while loop with verification of user response
+            //conclude do-while loop with verification of user response
         } while (repeat.equalsIgnoreCase("yes"));
 
         //goodbye message
